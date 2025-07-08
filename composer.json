@@ -1,0 +1,7 @@
+{
+  "name": "FikretGoktepe/KULLANICI-OTURUM-TAHMIN-SISTEMI",
+  "description": "Basit bir PHP uygulaması",
+  "require": {
+    "php": "^7.4"
+  }
+}
