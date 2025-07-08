@@ -6,5 +6,7 @@
             "email": "Fikret_Goktepe@outlook.com"
         }
     ],
-    "require": {}
+"require": {
+    "php": "^8.1"
+}
 }
