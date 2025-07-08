@@ -61,7 +61,7 @@
             }
         }
 
-        fetch('controller.php')
+        fetch('Controller.php')
             .then(response => response.json())
             .then(data => {
                 const tbody = document.querySelector('#userTable tbody');
