@@ -1,7 +1,10 @@
 {
-  "name": "FikretGoktepe/KULLANICI-OTURUM-TAHMIN-SISTEMI",
-  "description": "Basit bir PHP uygulaması",
-  "require": {
-    "php": "^7.4"
-  }
+    "name": "fikretgoktepe/loginestimate",
+    "authors": [
+        {
+            "name": "Fikret Göktpe",
+            "email": "Fikret_Goktepe@outlook.com"
+        }
+    ],
+    "require": {}
 }
