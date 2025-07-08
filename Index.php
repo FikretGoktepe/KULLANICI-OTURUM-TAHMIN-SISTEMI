@@ -1,56 +1,94 @@
-<?php
-require_once("CalculateAverageHours.php");
-require("CalculateByDayOfTheWeek.php");
+<!DOCTYPE html>
+<html lang="tr">
 
+<head>
+    <meta charset="UTF-8" />
+    <title>Kullanıcı Listesi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/css/tabler.min.css">
+    <style>
+        .card {
+            max-width: 100%;
+            margin: 5%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            padding: 0 20px;
+        }
 
-//Bugünün Tarihi
-$today = new DateTime("now", new DateTimeZone("UTC"));
-//Kullanıcı Profil Listesi
-$UserProfile = [];
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+</head>
 
-// CURL istedği oluşturularak API üzerinden veri alınıyor.
-$ch = curl_init('https://case-test-api.humanas.io');
+<body>
+    <div class="card">
+        <div class="table-responsive">
+            <table id="userTable" class="table table-vcenter card-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Tahmini Zaman 1</th>
+                        <th>Tahmini Zaman 2 (Hafta, Saat)</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPGET, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json',
-    'Accept: application/json'
-]);
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-$response = curl_exec($ch);
+    <script>
+        function dayNumberToName(dayNum) {
+            switch (dayNum) {
+                case 1:
+                    return "Monday";
+                case 2:
+                    return "Tuesday";
+                case 3:
+                    return "Wednesday";
+                case 4:
+                    return "Thursday";
+                case 5:
+                    return "Friday";
+                case 6:
+                    return "Saturday";
+                case 7:
+                    return "Sunday";
+                default:
+                    return "";
+            }
+        }
 
-//İstek sırasında bir hata oluşması durumunda hata mesajı yollanıyor.
-if (curl_errno($ch)) {
-    echo 'CURL Hatası: ' . curl_error($ch);
-    curl_close($ch);
-    exit;
-}
+        fetch('controller.php')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#userTable tbody');
+                tbody.innerHTML = '';
 
-//Curl kapatılıyor.
-curl_close($ch);
+                data.forEach(user => {
+                    let week = '';
+                    let hour = '';
+                    if (Array.isArray(user.averageHour2)) {
+                        week = user.averageHour2[0] !== null && user.averageHour2[0] !== undefined ? dayNumberToName(Number(user.averageHour2[0])) : '';
+                        hour = user.averageHour2[1] !== null && user.averageHour2[1] !== undefined ? user.averageHour2[1] : '';
+                    }
 
-$data = json_decode($response, true);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.averageHour1}</td>
+                <td>${week}, ${hour}</td>
+            `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(console.error);
+    </script>
 
-//Kullanıcıların giriş yaptıkları zamanlar arasındaki ortalama zaman farkı hesaplanıyor.
-foreach ($data['data']['rows'] as $row) {
-    $UserProfile[] = new User($row['id'], $row['name'], CalculateAverageHours($row['logins']));
-}
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js"></script>
+</body>
 
-print_r($UserProfile);
-
-//User nesnesi tanımlanıyor.
-class User
-{
-    public $id;
-    public $name;
-    public $averageHour;
-
-    public function __construct($_id, $_name, $_averageHour)
-    {
-        $this->id = $_id;
-        $this->name = $_name;
-        $this->averageHour = $_averageHour;
-    }
-}
-?>
+</html>
